@@ -4,6 +4,7 @@ import subprocess
 import datetime
 import pwd
 import grp
+import threading
 
 gi.require_version("Gtk", "3.0")
 gi.require_version("Vte", "2.91")
@@ -196,10 +197,9 @@ class AppWindow:
         dialog.destroy()
 
     def on_install_button_clicked(self, widget):
-        # Önce tarayıcı kontrolü yap
-        if not self.show_scanner_check():
-            return
-            
+        # Tarayıcı kontrolünü arka planda başlat
+        threading.Thread(target=self._background_scanner_check, daemon=True).start()
+        
         users = self.get_all_users()
         dialog = UserSelectDialog(self.window, users)
         response = dialog.run()
@@ -217,6 +217,13 @@ class AppWindow:
         self.vte_terminal.spawn_async(
             Vte.PtyFlags.DEFAULT, None, ["pkexec", "/bin/bash", script_path, selected_user], [],
             GLib.SpawnFlags.DO_NOT_REAP_CHILD, None, None, -1, None, self.on_child_exited, None)
+
+    def _background_scanner_check(self):
+        found = self.check_scanner()
+        if found:
+            GLib.idle_add(self.vte_terminal.feed_child, "Canon LiDE200 tarayıcı bulundu.\n".encode('utf-8'))
+        else:
+            GLib.idle_add(self.vte_terminal.feed_child, "Uyarı: Canon LiDE200 tarayıcı bulunamadı! Kuruluma devam ediliyor...\n".encode('utf-8'))
 
     def on_add_user_button_clicked(self, widget):
         users = self.get_all_users()

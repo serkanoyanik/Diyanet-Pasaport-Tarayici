@@ -54,8 +54,8 @@
             <property name="spacing">12</property>
             <property name="width-request">180</property>
             <child>
-                                <object class="GtkButton" id="install_button">
-                    <property name="label">Kurulumu Başlat</property>
+              <object class="GtkButton" id="install_button">
+                <property name="label">Kurulumu Başlat</property>
                     <property name="visible">True</property>
                     <property name="relief">none</property>
                     <property name="border-width">0</property>
