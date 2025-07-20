@@ -4,12 +4,14 @@ Bu uygulama, Pasaport Tarayıcı için gerekli kurulumları yapan GTK3 tabanlı 
 
 ## Özellikler
 
-- 🖥️ **Modern GTK3 Arayüzü**: Temiz ve kullanıcı dostu arayüz
-- 🔧 **Otomatik Kurulum**: Tek tıkla tam kurulum
-- 👥 **Kullanıcı Yönetimi**: HacPasaport grubuna kullanıcı ekleme
-- 📸 **Screenshot Alma**: Ekran görüntüsü alma özelliği
-- 🎨 **Özelleştirilmiş Tasarım**: Yeşil butonlar ve DIB logosu
-- 🖥️ **Terminal Entegrasyonu**: Gerçek zamanlı kurulum çıktıları
+- 🖥️ **Modern GTK3 Arayüzü**
+- 🔧 **Otomatik Kurulum**
+- 👥 **Kullanıcı Yönetimi** (Yerel ve Domain kullanıcıları)
+- 📸 **Screenshot Alma**
+- 🎨 **Özelleştirilmiş Tasarım**
+- 🖥️ **Terminal Entegrasyonu**
+- 🔍 **Tarayıcı Kontrolü** (Canon LiDE200)
+- ℹ️ **Akıllı Bilgilendirme**
 
 ## Ekran Görüntüleri
 
@@ -35,9 +37,24 @@ python3 app.py
 
 ## Kullanım
 
-1. **Kurulumu Başlat**: Seçilen kullanıcı için tam kurulum yapar
-2. **Kullanıcı Ekle**: Mevcut kullanıcıyı HacPasaport grubuna ekler
+1. **Kurulumu Başlat**: 
+   - Canon LiDE200 tarayıcısını kontrol eder
+   - Seçilen kullanıcı için tam kurulum yapar
+   - Kurulum sonrası grup üyeliği hakkında bilgi verir
+
+2. **Kullanıcı Ekle**: 
+   - Mevcut kullanıcıyı HacPasaport grubuna ekler
+   - Domain kullanıcılarını destekler (/home/DIB/ formatında)
+   - Grup üyeliği hakkında bilgi verir
+
 3. **Screenshot**: Uygulama penceresinin ekran görüntüsünü alır
+
+### Önemli Notlar
+
+- **Tarayıcı Gereksinimi**: Canon LiDE200 tarayıcı gerekli
+- **Grup Üyeliği**: Kullanıcı eklendikten sonra oturum kapatıp tekrar giriş yapın
+- **GNOME Masaüstü**: Bazı durumlarda yeniden başlatma gerekebilir
+- **Domain Kullanıcıları**: Active Directory kullanıcıları otomatik algılanır
 
 ## Proje Yapısı
 
@@ -66,59 +83,11 @@ hac_pasaport_kurulum/
 - **Stil**: CSS ile özelleştirilmiş butonlar
 - **Masaüstü Desteği**: XFCE, GNOME, KDE
 
-## Geliştirme
-
-### CSS Stilleri
-
-Butonlar için özel CSS sınıfı:
-```css
-.rounded-green-button {
-    background-color: #00C851;
-    color: white;
-    border-radius: 4px;
-    min-width: 60px;
-    min-height: 25px;
-}
-```
-
-### Yeni Özellik Ekleme
-
-1. UI dosyasına widget ekle
-2. Python kodunda event handler yaz
-3. CSS ile stil ver
-
-## Katkıda Bulunma
-
-1. Fork yapın
-2. Feature branch oluşturun (`git checkout -b feature/amazing-feature`)
-3. Commit yapın (`git commit -m 'Add amazing feature'`)
-4. Push yapın (`git push origin feature/amazing-feature`)
-5. Pull Request açın
-
 ## Lisans
 
-Bu proje Pardus projesi altında geliştirilmiştir.
+Bu proje Diyanet Pardus projesi altında geliştirilmiştir.
 
 ## İletişim
 
 - **Website**: https://www.pardus.org.tr
 - **GitHub**: [Proje Sayfası](https://github.com/your-username/pasaport-tarayici-kurulum)
-
-## Ekran Görüntüleri
-
-### Ana Pencere
-- Sol panel: Kontrol butonları ve DIB logosu
-- Sağ panel: Terminal çıktıları
-
-### Hakkında Penceresi
-- DIB logosu ile özelleştirilmiş
-- Uygulama bilgileri ve bağlantılar
-
-## Sürüm Geçmişi
-
-### v1.0.0
-- İlk sürüm
-- GTK3 arayüzü
-- Kurulum ve kullanıcı yönetimi
-- Screenshot özelliği
-- Özelleştirilmiş tasarım 

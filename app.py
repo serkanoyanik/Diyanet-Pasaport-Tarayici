@@ -2,10 +2,56 @@ import gi
 import os
 import subprocess
 import datetime
+import pwd
+import grp
 
 gi.require_version("Gtk", "3.0")
 gi.require_version("Vte", "2.91")
 from gi.repository import Gtk, Vte, GLib, Gdk, GdkPixbuf
+
+class ScannerCheckDialog(Gtk.Dialog):
+    def __init__(self, parent, scanner_found):
+        super().__init__(title="Tarayıcı Durumu", transient_for=parent, modal=True)
+        self.set_default_size(400, 200)
+        
+        box = self.get_content_area()
+        
+        if scanner_found:
+            label = Gtk.Label(label="✅ Canon LiDE200 tarayıcı bulundu!\n\nTarayıcı hazır durumda.")
+            label.set_line_wrap(True)
+        else:
+            label = Gtk.Label(label="❌ Canon LiDE200 tarayıcı bulunamadı!\n\nLütfen tarayıcının bağlı olduğundan ve açık olduğundan emin olun.\n\nDesteklenen tarayıcı: Canon LiDE200")
+            label.set_line_wrap(True)
+        
+        box.add(label)
+        self.add_button("Tamam", Gtk.ResponseType.OK)
+        self.show_all()
+
+class GroupInfoDialog(Gtk.Dialog):
+    def __init__(self, parent):
+        super().__init__(title="Grup Üyeliği Bilgisi", transient_for=parent, modal=True)
+        self.set_default_size(450, 250)
+        
+        box = self.get_content_area()
+        
+        info_text = """ℹ️ Önemli Bilgi
+
+Kullanıcı HacPasaport grubuna eklendikten sonra:
+
+1. Oturumu kapatıp tekrar giriş yapın
+2. Eğer grup üyeliği aktif olmazsa, sistemi yeniden başlatın
+
+Bu, Linux sistemlerinde grup üyeliklerinin aktif olması için gereklidir.
+
+Not: Bazı masaüstü ortamlarında (özellikle GNOME) grup üyeliğinin aktif olması için yeniden başlatma gerekebilir."""
+        
+        label = Gtk.Label(label=info_text)
+        label.set_line_wrap(True)
+        label.set_justify(Gtk.Justification.LEFT)
+        
+        box.add(label)
+        self.add_button("Anladım", Gtk.ResponseType.OK)
+        self.show_all()
 
 class UserSelectDialog(Gtk.Dialog):
     def __init__(self, parent, user_list):
@@ -71,15 +117,89 @@ class AppWindow:
 
         self.window.show_all()
 
+    def check_scanner(self):
+        """Canon LiDE200 tarayıcısının varlığını kontrol et"""
+        try:
+            result = subprocess.run(['scanimage', '-L'], 
+                                  capture_output=True, text=True, timeout=10)
+            if result.returncode == 0:
+                scanner_output = result.stdout.lower()
+                # Canon LiDE200 veya benzer Canon tarayıcıları ara
+                if 'canon' in scanner_output and ('lide200' in scanner_output or 'lide' in scanner_output):
+                    return True
+                else:
+                    print("Tarayıcı bulunamadı. Çıktı:", result.stdout)
+                    return False
+            else:
+                print("scanimage komutu başarısız:", result.stderr)
+                return False
+        except subprocess.TimeoutExpired:
+            print("scanimage komutu zaman aşımına uğradı")
+            return False
+        except FileNotFoundError:
+            print("scanimage komutu bulunamadı")
+            return False
+        except Exception as e:
+            print(f"Tarayıcı kontrolü hatası: {e}")
+            return False
+
     def get_all_users(self):
-        import pwd
+        """Tüm kullanıcıları al (yerel ve domain kullanıcıları dahil)"""
         users = []
-        for p in pwd.getpwall():
-            if p.pw_uid >= 1000 and p.pw_name != "nobody":
-                users.append(p.pw_name)
+        try:
+            # /etc/passwd'den kullanıcıları al
+            for p in pwd.getpwall():
+                if p.pw_uid >= 1000 and p.pw_name != "nobody":
+                    users.append(p.pw_name)
+            
+            # Domain kullanıcılarını kontrol et (Active Directory)
+            # /home/DIB/ altındaki kullanıcıları ara
+            dib_home = "/home/DIB"
+            if os.path.exists(dib_home):
+                for item in os.listdir(dib_home):
+                    item_path = os.path.join(dib_home, item)
+                    if os.path.isdir(item_path) and item not in users:
+                        users.append(item)
+            
+            # getent passwd ile domain kullanıcılarını da al
+            try:
+                result = subprocess.run(['getent', 'passwd'], 
+                                      capture_output=True, text=True, timeout=5)
+                if result.returncode == 0:
+                    for line in result.stdout.splitlines():
+                        parts = line.split(':')
+                        if len(parts) >= 3:
+                            username = parts[0]
+                            uid = int(parts[2])
+                            if uid >= 1000 and username not in users and username != "nobody":
+                                users.append(username)
+            except Exception as e:
+                print(f"Domain kullanıcıları alınırken hata: {e}")
+                
+        except Exception as e:
+            print(f"Kullanıcı listesi alınırken hata: {e}")
+        
         return sorted(set(users))
 
+    def show_scanner_check(self):
+        """Tarayıcı durumunu kontrol et ve bilgi ver"""
+        scanner_found = self.check_scanner()
+        dialog = ScannerCheckDialog(self.window, scanner_found)
+        dialog.run()
+        dialog.destroy()
+        return scanner_found
+
+    def show_group_info(self):
+        """Grup üyeliği hakkında bilgi ver"""
+        dialog = GroupInfoDialog(self.window)
+        dialog.run()
+        dialog.destroy()
+
     def on_install_button_clicked(self, widget):
+        # Önce tarayıcı kontrolü yap
+        if not self.show_scanner_check():
+            return
+            
         users = self.get_all_users()
         dialog = UserSelectDialog(self.window, users)
         response = dialog.run()
@@ -122,6 +242,8 @@ class AppWindow:
         self.add_user_button.set_sensitive(True)
         if status == 0:
             self.vte_terminal.feed_child("\n--- Kullanıcı başarıyla eklendi! ---\n".encode('utf-8'))
+            # Grup üyeliği hakkında bilgi ver
+            GLib.idle_add(self.show_group_info)
         else:
             self.vte_terminal.feed_child("\n--- Kullanıcı eklemede bir hata oluştu! ---\n".encode('utf-8'))
 
@@ -129,6 +251,8 @@ class AppWindow:
         self.install_button.set_sensitive(True)
         if status == 0:
             self.vte_terminal.feed_child("\n--- Kurulum başarıyla tamamlandı! ---\n".encode('utf-8'))
+            # Grup üyeliği hakkında bilgi ver
+            GLib.idle_add(self.show_group_info)
         else:
             self.vte_terminal.feed_child("\n--- Kurulumda bir hata oluştu veya iptal edildi! ---\n".encode('utf-8'))
 

@@ -155,7 +155,13 @@ if ! grep -q 'hacpasaport' /etc/polkit-1/localauthority/50-local.d/99-scan.pkla;
 fi
 
 log "14. Donanım kontrolü: scanimage -L"
-scanimage -L || log "Donanım bulunamadı veya hata oluştu."
+if scanimage -L | grep -i "canon.*lide200" > /dev/null; then
+    log "✅ Canon LiDE200 tarayıcı bulundu!"
+else
+    log "❌ Canon LiDE200 tarayıcı bulunamadı!"
+    log "Lütfen tarayıcının bağlı olduğundan ve açık olduğundan emin olun."
+    scanimage -L || log "scanimage komutu çalıştırılamadı."
+fi
 
 log "15. Masaüstü kısayolu oluşturuluyor..."
 cat > /usr/share/applications/Pasaport-Tarayıcı.desktop <<EOF
