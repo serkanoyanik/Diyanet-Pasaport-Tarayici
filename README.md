@@ -29,6 +29,12 @@ sudo apt-get install python3-gi python3-gi-cairo gir1.2-gtk-3.0 gir1.2-vte-2.91
 sudo dnf install python3-gobject gtk3 vte291
 ```
 
+### OpenCV JAR Dosyası Hakkında
+
+- `source/HacPasaport/opencv-3.4.2-0.jar` dosyası boyut sınırı nedeniyle repoda **sıkıştırılmış olarak** (`opencv-3.4.2-0.jar.tar.gz`) tutulmaktadır.
+- Kurulum sırasında `scripts/install.sh` bu arşivi otomatik olarak açar ve gerekli `.jar` dosyasını doğru dizine yerleştirir.
+- **Ekstra bir işlem yapmanıza gerek yoktur.**
+
 ### Çalıştırma
 
 ```bash
@@ -90,4 +96,4 @@ Bu proje Diyanet Pardus projesi altında geliştirilmiştir.
 ## İletişim
 
 - **Website**: https://www.pardus.org.tr
-- **GitHub**: [Proje Sayfası](https://github.com/your-username/pasaport-tarayici-kurulum)
+- **GitHub**: [Proje Sayfası](https://github.com/serkanoyanik/Diyanet-Pasaport-Tarayici)
