@@ -179,5 +179,17 @@ EOF
 chmod 644 /usr/share/applications/Pasaport-Tarayıcı.desktop
 add_desktop_shortcut
 
+log "2. OpenCV jar arşivini çıkarma..."
+OPENCV_ARCHIVE="$(dirname "$0")/../source/HacPasaport/opencv-3.4.2-0.jar.tar.gz"
+if [ -f "$OPENCV_ARCHIVE" ]; then
+    tar -xzvf "$OPENCV_ARCHIVE" -C /opt/HacPasaport || error_exit "OpenCV jar arşivi çıkarılamadı!"
+    if [ ! -f /opt/HacPasaport/opencv-3.4.2-0.jar ]; then
+        error_exit "OpenCV jar dosyası arşivden çıkarılamadı!"
+    fi
+    log "OpenCV jar arşivi başarıyla çıkarıldı."
+else
+    error_exit "OpenCV jar arşivi bulunamadı! Lütfen source/HacPasaport dizinine ekleyin."
+fi
+
 log "Kurulum tamamlandı!"
 echo -e "\n[UYARI] Kullanıcının oturumunu sonlandırıp tekrar giriş yapmalısınız. Grup ve yetki değişikliklerinin etkili olması için bu gereklidir."

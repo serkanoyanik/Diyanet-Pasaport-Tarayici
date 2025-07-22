@@ -132,3 +132,5 @@ Thumbs.db
 # But keep icons
 !icons/*.png
 !icons/*.svg 
+
+source/HacPasaport/opencv-3.4.2-0.jar 
