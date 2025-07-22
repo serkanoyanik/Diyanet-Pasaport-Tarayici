@@ -18,11 +18,12 @@ error_exit() {
 
 add_desktop_shortcut() {
     USER_HOME=$(eval echo "~$KULLANICI")
+    USER_GROUP=$(id -gn "$KULLANICI")
     for DESKTOP_DIR in "$USER_HOME/Masaüstü" "$USER_HOME/Desktop"; do
         if [ -d "$DESKTOP_DIR" ]; then
             cp /usr/share/applications/Pasaport-Tarayıcı.desktop "$DESKTOP_DIR/Pasaport-Tarayıcı.desktop"
             chmod +x "$DESKTOP_DIR/Pasaport-Tarayıcı.desktop"
-            chown "$KULLANICI:$KULLANICI" "$DESKTOP_DIR/Pasaport-Tarayıcı.desktop"
+            chown "$KULLANICI:$USER_GROUP" "$DESKTOP_DIR/Pasaport-Tarayıcı.desktop"
             sudo -u "$KULLANICI" gio set "$DESKTOP_DIR/Pasaport-Tarayıcı.desktop" "metadata::trusted" yes 2>/dev/null || true
             log "Masaüstü kısayolu $DESKTOP_DIR dizinine kopyalandı, sahipliği ayarlandı ve güvenli olarak işaretlendi."
         fi
@@ -160,8 +161,6 @@ if scanimage -L | grep -i "canon.*lide200" > /dev/null; then
 else
     log "❌ Canon LiDE200 tarayıcı bulunamadı!"
     log "Lütfen tarayıcının bağlı olduğundan ve açık olduğundan emin olun."
-    log "Hiçbir tarayıcı tespit edilemedi. Lütfen Canon LiDE200 modelinin bağlı ve açık olduğundan emin olun."
-    # scanimage -L çıktısını terminale yazdırmak yerine sadece Türkçe mesaj veriyoruz
 fi
 
 log "15. Masaüstü kısayolu oluşturuluyor..."

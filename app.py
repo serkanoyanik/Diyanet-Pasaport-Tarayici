@@ -265,10 +265,10 @@ class AppWindow:
 
     def on_about_button_clicked(self, widget):
         about_dialog = Gtk.AboutDialog(
-            transient_for=self.window, modal=True, authors=["Pardus"],
+            transient_for=self.window, modal=True, authors=["Serkan Oyanık"],
             comments="Bu uygulama, Pasaport Tarayıcı için gerekli kurulumları yapar.",
-            program_name="Pasaport Tarayıcı Kurulum", version="1.0.0",
-            website="https://www.pardus.org.tr", website_label="Pardus Resmi Web Sitesi")
+            program_name="Diyanet Pasaport Tarayıcı Kurulum", version="1.0.0",
+            website="https://github.com/kendi-github-reponuz/diyanet-pasaport-tarayici-kurulum", website_label="Proje Github Reposu")
         
         # DIB logosunu yükle ve ekle
         try:
