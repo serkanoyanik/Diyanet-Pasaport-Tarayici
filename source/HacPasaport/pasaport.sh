@@ -1,2 +1,2 @@
 #!/bin/bash
-exec /usr/bin/java -jar /opt/HacPasaport/swingUI.jar
+exec /usr/bin/java -jar /opt/HacPasaport/source/HacPasaport/swingUI.jar

@@ -17,7 +17,7 @@
             <property name="tooltip-text">Hakkında</property>
             <child>
               <object class="GtkImage">
-                <property name="file">icons/open-menu.png</property>
+                <property name="file">/usr/share/hac-pasaport-kurulum/icons/open-menu.png</property>
               </object>
             </child>
           </object>
@@ -31,7 +31,7 @@
             <property name="tooltip-text">Ekran Görüntüsü Al</property>
             <child>
               <object class="GtkImage">
-                <property name="file">icons/camera.png</property>
+                <property name="file">/usr/share/hac-pasaport-kurulum/icons/camera.png</property>
               </object>
             </child>
           </object>
@@ -72,7 +72,7 @@
             <child>
               <object class="GtkImage" id="dib_logo">
                 <property name="visible">True</property>
-                <property name="file">icons/dib_logo.png</property>
+                <property name="file">/usr/share/hac-pasaport-kurulum/icons/dib_logo.png</property>
                 <property name="pixel-size">6</property>
                 <property name="margin-top">20</property>
               </object>

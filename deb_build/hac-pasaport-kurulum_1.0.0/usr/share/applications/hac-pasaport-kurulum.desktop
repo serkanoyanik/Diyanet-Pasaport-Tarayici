@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Pasaport Tarayıcı Kurulum
+Comment=Diyanet Pasaport Tarayıcı Kurulum ve Yönetim Aracı
+Exec=python3 /opt/HacPasaport/app.py
+Icon=/usr/share/hac-pasaport-kurulum/icons/canon-lide-210.png
+Categories=Utility;Application;System;
+Terminal=false
+StartupNotify=false
+Keywords=pasaport;tarayıcı;kurulum;diyanet; 

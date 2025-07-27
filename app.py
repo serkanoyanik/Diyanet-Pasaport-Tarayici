@@ -10,6 +10,42 @@ gi.require_version("Gtk", "3.0")
 gi.require_version("Vte", "2.91")
 from gi.repository import Gtk, Vte, GLib, Gdk, GdkPixbuf
 
+def get_app_base_path():
+    """Uygulamanın temel dizinini belirle - geliştirme veya kurulum moduna göre"""
+    # Eğer /opt/HacPasaport altında çalışıyorsa (DEB paketi kurulumu)
+    if os.path.exists("/opt/HacPasaport/app.py"):
+        return "/opt/HacPasaport"
+    # Geliştirme modunda
+    else:
+        return os.path.dirname(__file__)
+
+def get_resource_path(resource_type, filename):
+    """Kaynak dosyaların yolunu belirle"""
+    base_path = get_app_base_path()
+    
+    if resource_type == "ui":
+        # UI dosyaları /usr/share/hac-pasaport-kurulum/ui altında
+        if os.path.exists(f"/usr/share/hac-pasaport-kurulum/ui/{filename}"):
+            return f"/usr/share/hac-pasaport-kurulum/ui/{filename}"
+        else:
+            return os.path.join(base_path, "ui", filename)
+    elif resource_type == "icons":
+        # İkon dosyaları /usr/share/hac-pasaport-kurulum/icons altında
+        if os.path.exists(f"/usr/share/hac-pasaport-kurulum/icons/{filename}"):
+            return f"/usr/share/hac-pasaport-kurulum/icons/{filename}"
+        else:
+            return os.path.join(base_path, "icons", filename)
+    elif resource_type == "scripts":
+        # Script dosyaları için öncelik sırası:
+        # 1. /opt/HacPasaport/install.sh (DEB paketi kurulumu sonrası)
+        # 2. scripts/install.sh (geliştirme modu)
+        if os.path.exists(f"/opt/HacPasaport/{filename}"):
+            return f"/opt/HacPasaport/{filename}"
+        else:
+            return os.path.join(base_path, "scripts", filename)
+    else:
+        return os.path.join(base_path, resource_type, filename)
+
 class ScannerCheckDialog(Gtk.Dialog):
     def __init__(self, parent, scanner_found):
         super().__init__(title="Tarayıcı Durumu", transient_for=parent, modal=True)
@@ -44,7 +80,11 @@ Kullanıcı HacPasaport grubuna eklendikten sonra:
 
 Bu, Linux sistemlerinde grup üyeliklerinin aktif olması için gereklidir.
 
-Not: Bazı masaüstü ortamlarında (özellikle GNOME) grup üyeliğinin aktif olması için yeniden başlatma gerekebilir."""
+⚠️ Masaüstü Ortamı Uyarısı:
+Bazı masaüstü ortamlarında grup üyeliğinin aktif olması için yeniden başlatma gerekebilir. Eğer oturum kapatıp açma yeterli olmazsa, bilgisayarı yeniden başlatın.
+
+🔍 Grup Üyeliğini Kontrol Etmek İçin:
+Terminal'de 'groups' komutunu çalıştırarak hacpasaport grubunun listede olup olmadığını kontrol edebilirsiniz."""
         
         label = Gtk.Label(label=info_text)
         label.set_line_wrap(True)
@@ -74,7 +114,7 @@ class UserSelectDialog(Gtk.Dialog):
 class AppWindow:
     def __init__(self, application):
         builder = Gtk.Builder()
-        ui_path = os.path.join(os.path.dirname(__file__), "ui", "window.ui")
+        ui_path = get_resource_path("ui", "window.ui")
         builder.add_from_file(ui_path)
 
         self.window = builder.get_object("main_window")
@@ -192,9 +232,121 @@ class AppWindow:
 
     def show_group_info(self):
         """Grup üyeliği hakkında bilgi ver"""
-        dialog = GroupInfoDialog(self.window)
+        # Masaüstü ortamını tespit et
+        desktop_env = self.detect_desktop_environment()
+        
+        if desktop_env == 'gnome':
+            # GNOME için özel mesaj
+            dialog = self._create_gnome_group_info_dialog()
+        else:
+            # Diğer masaüstü ortamları için genel mesaj
+            dialog = self._create_general_group_info_dialog()
+        
         dialog.run()
         dialog.destroy()
+    
+    def _create_gnome_group_info_dialog(self):
+        """GNOME masaüstü için özel grup bilgi dialog'u"""
+        dialog = Gtk.Dialog(title="Grup Üyeliği Bilgisi - GNOME", transient_for=self.window, modal=True)
+        dialog.set_default_size(500, 300)
+        
+        box = dialog.get_content_area()
+        
+        info_text = """ℹ️ GNOME Masaüstü - Grup Üyeliği Bilgisi
+
+Kullanıcı HacPasaport grubuna eklendikten sonra:
+
+✅ Otomatik Aktivasyon:
+GNOME ortamında grup üyeliği otomatik olarak aktif hale getirilmeye çalışıldı.
+
+🔄 Oturum Yenileme (Önerilen):
+1. Oturumu kapatın (Çıkış Yap)
+2. Tekrar giriş yapın
+3. Terminal'de 'groups' komutu ile kontrol edin
+
+✅ Gelişmiş GNOME Aktivasyonu:
+Artık GNOME'da oturum kapatıp açtıktan sonra grup üyeliği otomatik olarak aktif hale gelecek.
+
+⚠️ GNOME Özel Durumu:
+GNOME masaüstü ortamında grup üyelikleri bazen oturum kapatıp açma ile aktif olmayabilir. Bu durumda:
+
+🔄 Alternatif Yöntemler:
+• Yeni bir terminal penceresi açın (Ctrl+Alt+T)
+• 'groups' komutu ile kontrol edin
+• Otomatik aktivasyon scripti çalıştırın: ~/.hacpasaport_activate_group.sh
+
+⚠️ ÖNEMLİ UYARI:
+Eğer masaüstü erişimi kaybolursa veya grup üyeliği aktif olmazsa:
+• Bilgisayarı yeniden başlatın
+• Veya yeni bir oturum açın (Ctrl+Alt+F2)
+
+🔍 Grup Üyeliğini Kontrol Etmek İçin:
+Terminal'de şu komutu çalıştırın:
+groups
+
+✅ Başarılı grup üyeliği şöyle görünür:
+pardus-adm adm dialout cdrom floppy sudo audio dip video plugdev netdev hacpasaport
+
+💡 İpucu: GNOME'da grup üyeliklerinin aktif olması için bazen yeni terminal pencereleri açmak gerekebilir.
+
+🛠️ Otomatik Aktivasyon Araçları:
+• ~/.hacpasaport_activate_group.sh - Grup üyeliğini aktif hale getirir
+• ~/.hacpasaport_session_start.sh - Oturum başlangıcında grup üyeliğini aktif hale getirir
+• ~/.hacpasaport_group_check.sh - Grup üyeliğini kontrol eder
+
+🔧 Sorun Giderme:
+Eğer masaüstü erişimi kaybolursa, terminal'de şu komutu çalıştırın:
+sudo systemctl restart gdm
+
+✅ Yeni Özellik:
+GNOME'da oturum kapatıp açtıktan sonra grup üyeliği otomatik olarak aktif hale gelecek."""
+        
+        label = Gtk.Label(label=info_text)
+        label.set_line_wrap(True)
+        label.set_justify(Gtk.Justification.LEFT)
+        
+        # Scroll view ekle
+        scrolled_window = Gtk.ScrolledWindow()
+        scrolled_window.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+        scrolled_window.add(label)
+        
+        box.add(scrolled_window)
+        dialog.add_button("Anladım", Gtk.ResponseType.OK)
+        dialog.show_all()
+        
+        return dialog
+    
+    def _create_general_group_info_dialog(self):
+        """Genel masaüstü ortamları için grup bilgi dialog'u"""
+        dialog = Gtk.Dialog(title="Grup Üyeliği Bilgisi", transient_for=self.window, modal=True)
+        dialog.set_default_size(450, 250)
+        
+        box = dialog.get_content_area()
+        
+        info_text = """ℹ️ Önemli Bilgi
+
+Kullanıcı HacPasaport grubuna eklendikten sonra:
+
+1. Oturumu kapatıp tekrar giriş yapın
+2. Eğer grup üyeliği aktif olmazsa, sistemi yeniden başlatın
+
+Bu, Linux sistemlerinde grup üyeliklerinin aktif olması için gereklidir.
+
+⚠️ Masaüstü Ortamı Uyarısı:
+Bazı masaüstü ortamlarında grup üyeliğinin aktif olması için yeniden başlatma gerekebilir. Eğer oturum kapatıp açma yeterli olmazsa, bilgisayarı yeniden başlatın.
+
+🔍 Grup Üyeliğini Kontrol Etmek İçin:
+Terminal'de 'groups' komutunu çalıştırarak hacpasaport grubunun listede olup olmadığını kontrol edebilirsiniz."""
+        
+        label = Gtk.Label(label=info_text)
+        label.set_line_wrap(True)
+        label.set_justify(Gtk.Justification.LEFT)
+        
+        box.add(label)
+        dialog.add_button("Anladım", Gtk.ResponseType.OK)
+        dialog.show_all()
+        
+        return dialog
 
     def on_install_button_clicked(self, widget):
         # Tarayıcı kontrolünü arka planda başlat
@@ -209,7 +361,7 @@ class AppWindow:
             return
         self.install_button.set_sensitive(False)
         self.vte_terminal.reset(True, True)
-        script_path = os.path.join(os.path.dirname(__file__), "scripts", "install.sh")
+        script_path = get_resource_path("scripts", "install.sh")
         if not os.path.exists(script_path):
             self.vte_terminal.feed_child("Hata: Kurulum betiği bulunamadı!\n".encode('utf-8'))
             self.install_button.set_sensitive(True)
@@ -235,7 +387,7 @@ class AppWindow:
             return
         self.add_user_button.set_sensitive(False)
         self.vte_terminal.reset(True, True)
-        script_path = os.path.join(os.path.dirname(__file__), "scripts", "install.sh")
+        script_path = get_resource_path("scripts", "install.sh")
         if not os.path.exists(script_path):
             self.vte_terminal.feed_child("Hata: Kurulum betiği bulunamadı!\n".encode('utf-8'))
             self.add_user_button.set_sensitive(True)
@@ -268,11 +420,12 @@ class AppWindow:
             transient_for=self.window, modal=True, authors=["Serkan Oyanık"],
             comments="Bu uygulama, Pasaport Tarayıcı için gerekli kurulumları yapar.",
             program_name="Diyanet Pasaport Tarayıcı Kurulum", version="1.0.0",
-            website="https://github.com/kendi-github-reponuz/diyanet-pasaport-tarayici-kurulum", website_label="Proje Github Reposu")
+            website="https://github.com/serkanoyanik/Diyanet-Pasaport-Tarayici", website_label="Proje Github Reposu"
+        )
         
         # DIB logosunu yükle ve ekle
         try:
-            logo_path = os.path.join(os.path.dirname(__file__), "icons", "dib_logo.png")
+            logo_path = get_resource_path("icons", "dib_logo.png")
             if os.path.exists(logo_path):
                 # Logo boyutunu ayarla (AboutDialog için uygun boyut)
                 logo_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
@@ -294,7 +447,7 @@ class AppWindow:
     def apply_css_styles(self):
         """CSS stillerini harici dosyadan yükle"""
         try:
-            css_path = os.path.join(os.path.dirname(__file__), "ui", "styles.css")
+            css_path = get_resource_path("ui", "styles.css")
             print(f"CSS dosya yolu: {css_path}")
             print(f"CSS dosyası var mı: {os.path.exists(css_path)}")
             
@@ -454,29 +607,73 @@ class AppWindow:
     def detect_desktop_environment(self):
         """Masaüstü ortamını tespit et"""
         try:
-            # XDG_CURRENT_DESKTOP değişkenini kontrol et
+            # 1. XDG_CURRENT_DESKTOP değişkenini kontrol et
             desktop = os.environ.get('XDG_CURRENT_DESKTOP', '').lower()
-            
-            if 'xfce' in desktop:
-                return 'xfce'
-            elif 'gnome' in desktop:
-                return 'gnome'
-            elif 'kde' in desktop:
-                return 'kde'
-            elif 'mate' in desktop:
-                return 'mate'
-            elif 'cinnamon' in desktop:
-                return 'cinnamon'
-            else:
-                # Alternatif yöntem: ps komutu ile kontrol
-                result = subprocess.run(['ps', '-e'], capture_output=True, text=True)
-                if 'xfce4-session' in result.stdout:
+            if desktop:
+                print(f"XDG_CURRENT_DESKTOP tespit edildi: {desktop}")
+                if 'xfce' in desktop:
                     return 'xfce'
-                elif 'gnome-session' in result.stdout:
+                elif 'gnome' in desktop:
                     return 'gnome'
-                else:
-                    return 'unknown'
-        except:
+                elif 'kde' in desktop:
+                    return 'kde'
+                elif 'mate' in desktop:
+                    return 'mate'
+                elif 'cinnamon' in desktop:
+                    return 'cinnamon'
+            
+            # 2. DESKTOP_SESSION değişkenini kontrol et
+            desktop_session = os.environ.get('DESKTOP_SESSION', '').lower()
+            if desktop_session:
+                print(f"DESKTOP_SESSION tespit edildi: {desktop_session}")
+                if 'xfce' in desktop_session:
+                    return 'xfce'
+                elif 'gnome' in desktop_session:
+                    return 'gnome'
+                elif 'kde' in desktop_session:
+                    return 'kde'
+                elif 'mate' in desktop_session:
+                    return 'mate'
+                elif 'cinnamon' in desktop_session:
+                    return 'cinnamon'
+            
+            # 3. Alternatif yöntem: ps komutu ile kontrol
+            result = subprocess.run(['ps', '-e'], capture_output=True, text=True)
+            if result.returncode == 0:
+                ps_output = result.stdout.lower()
+                if 'xfce4-session' in ps_output:
+                    print("XFCE session process tespit edildi")
+                    return 'xfce'
+                elif 'gnome-session' in ps_output:
+                    print("GNOME session process tespit edildi")
+                    return 'gnome'
+                elif 'plasma-session' in ps_output or 'kde' in ps_output:
+                    print("KDE session process tespit edildi")
+                    return 'kde'
+                elif 'mate-session' in ps_output:
+                    print("MATE session process tespit edildi")
+                    return 'mate'
+                elif 'cinnamon-session' in ps_output:
+                    print("Cinnamon session process tespit edildi")
+                    return 'cinnamon'
+            
+            # 4. Son çare: Kullanıcının home dizinindeki config dosyalarını kontrol et
+            home_dir = os.path.expanduser("~")
+            if os.path.exists(os.path.join(home_dir, ".config", "gnome-session")):
+                print("GNOME config dosyaları tespit edildi")
+                return 'gnome'
+            elif os.path.exists(os.path.join(home_dir, ".config", "xfce4")):
+                print("XFCE config dosyaları tespit edildi")
+                return 'xfce'
+            elif os.path.exists(os.path.join(home_dir, ".config", "kdeglobals")):
+                print("KDE config dosyaları tespit edildi")
+                return 'kde'
+            
+            print("Masaüstü ortamı tespit edilemedi")
+            return 'unknown'
+            
+        except Exception as e:
+            print(f"Masaüstü ortamı tespit hatası: {e}")
             return 'unknown'
     
     def _take_screenshot_with_desktop_tool(self, filename, desktop_env):

@@ -19,7 +19,21 @@ Bu uygulama, Pasaport Tarayıcı için gerekli kurulumları yapan GTK3 tabanlı 
 
 ## Kurulum
 
-### Gereksinimler
+### DEB Paketi ile Kurulum (Önerilen)
+
+```bash
+# DEB paketini indirin ve kurun
+sudo dpkg -i hac-pasaport-kurulum_1.0.0.deb
+
+# Bağımlılıkları kontrol edin
+sudo apt-get install -f
+
+# Uygulamalar menüsünden "Pasaport Tarayıcı Kurulum" uygulamasını çalıştırın
+```
+
+### Manuel Kurulum
+
+#### Gereksinimler
 
 ```bash
 # Ubuntu/Debian/Pardus
@@ -29,13 +43,13 @@ sudo apt-get install python3-gi python3-gi-cairo gir1.2-gtk-3.0 gir1.2-vte-2.91
 sudo dnf install python3-gobject gtk3 vte291
 ```
 
-### OpenCV JAR Dosyası Hakkında
+#### OpenCV JAR Dosyası Hakkında
 
 - `source/HacPasaport/opencv-3.4.2-0.jar` dosyası boyut sınırı nedeniyle repoda **sıkıştırılmış olarak** (`opencv-3.4.2-0.jar.tar.gz`) tutulmaktadır.
 - Kurulum sırasında `scripts/install.sh` bu arşivi otomatik olarak açar ve gerekli `.jar` dosyasını doğru dizine yerleştirir.
 - **Ekstra bir işlem yapmanıza gerek yoktur.**
 
-### Çalıştırma
+#### Çalıştırma
 
 ```bash
 python3 app.py
@@ -61,6 +75,7 @@ python3 app.py
 - **Grup Üyeliği**: Kullanıcı eklendikten sonra oturum kapatıp tekrar giriş yapın
 - **GNOME Masaüstü**: Bazı durumlarda yeniden başlatma gerekebilir
 - **Domain Kullanıcıları**: Active Directory kullanıcıları otomatik algılanır
+- **Masaüstü Kısayolu**: Sadece seçili kullanıcının masaüstüne eklenir
 
 ## Proje Yapısı
 
@@ -77,9 +92,22 @@ hac_pasaport_kurulum/
 │   └── open-menu.png     # Menü ikonu
 ├── scripts/
 │   └── install.sh        # Kurulum betiği
-└── source/
-    └── HacPasaport/      # Kaynak dosyalar
+├── source/
+│   └── HacPasaport/      # Kaynak dosyalar
+└── deb_build/            # DEB paketi yapısı
+    └── hac-pasaport-kurulum_1.0.0/
+        ├── DEBIAN/       # Paket kontrol dosyaları
+        ├── opt/HacPasaport/  # Uygulama dosyaları
+        └── usr/share/    # Sistem dosyaları
 ```
+
+## DEB Paketi Özellikleri
+
+- **Sistem Entegrasyonu**: Uygulamalar menüsüne otomatik eklenir
+- **İkon Desteği**: Canon LiDE210 ikonu ile görsel entegrasyon
+- **Kullanıcı Yönetimi**: Sadece seçili kullanıcı için masaüstü kısayolu
+- **Otomatik Kurulum**: Postinst betiği ile gerekli ayarlar
+- **Bağımlılık Yönetimi**: Gerekli paketler otomatik kurulur
 
 ## Teknik Detaylar
 
@@ -88,6 +116,7 @@ hac_pasaport_kurulum/
 - **Terminal**: VTE Terminal Widget
 - **Stil**: CSS ile özelleştirilmiş butonlar
 - **Masaüstü Desteği**: XFCE, GNOME, KDE
+- **Paket Formatı**: DEB (Debian/Ubuntu/Pardus)
 
 ## Lisans
 
