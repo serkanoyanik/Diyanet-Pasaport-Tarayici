@@ -1,0 +1,146 @@
+#!/bin/bash
+set -e
+
+echo "HacPasaport Kurulum kaldırılıyor..."
+
+# GÜVENLİK KONTROLÜ: /opt dizininin varlığını kontrol et
+if [ ! -d "/opt" ]; then
+    echo "KRİTİK HATA: /opt dizini bulunamadı! Kaldırma işlemi durduruluyor."
+    exit 1
+fi
+
+echo "Güvenlik kontrolü: /opt dizini mevcut"
+
+# 1. Tüm kullanıcıların masaüstünden kısayolları kaldır
+for user_home in /home/*; do
+    if [ -d "$user_home" ]; then
+        username=$(basename "$user_home")
+        
+        # Masaüstü kısayollarını kaldır
+        for desktop_dir in "$user_home/Masaüstü" "$user_home/Desktop"; do
+            if [ -f "$desktop_dir/Pasaport-Tarayıcı.desktop" ]; then
+                rm -f "$desktop_dir/Pasaport-Tarayıcı.desktop"
+                echo "Kısayol kaldırıldı: $desktop_dir/Pasaport-Tarayıcı.desktop"
+            fi
+        done
+        
+        # Kullanıcıya özel uygulama menüsünden kaldır
+        local_app_dir="$user_home/.local/share/applications"
+        if [ -f "$local_app_dir/Pasaport-Tarayıcı.desktop" ]; then
+            rm -f "$local_app_dir/Pasaport-Tarayıcı.desktop"
+            echo "Kullanıcı menüsü kısayolu kaldırıldı: $local_app_dir/Pasaport-Tarayıcı.desktop"
+        fi
+    fi
+done
+
+# 2. Sudoers dosyasından sadece ilgili satırları kaldır
+if [ -f "/etc/sudoers.d/diyanet" ]; then
+    echo "Sudoers dosyasından hacpasaport satırları kaldırılıyor..."
+    # Geçici dosya oluştur
+    grep -v "hacpasaport" /etc/sudoers.d/diyanet > /tmp/diyanet_sudoers_temp 2>/dev/null || true
+    
+    # Eğer geçici dosya boşsa, orijinal dosyayı sil
+    if [ ! -s /tmp/diyanet_sudoers_temp ]; then
+        rm -f /etc/sudoers.d/diyanet
+        echo "Sudoers dosyası tamamen kaldırıldı (boş kaldı)"
+    else
+        # Geçici dosyayı orijinal dosyaya kopyala
+        cp /tmp/diyanet_sudoers_temp /etc/sudoers.d/diyanet
+        chmod 440 /etc/sudoers.d/diyanet
+        echo "Sudoers dosyasından hacpasaport satırları kaldırıldı"
+    fi
+    
+    # Geçici dosyayı temizle
+    rm -f /tmp/diyanet_sudoers_temp
+fi
+
+# 3. Polkit dosyasını kaldır
+if [ -f "/etc/polkit-1/localauthority/50-local.d/99-scan.pkla" ]; then
+    rm -f /etc/polkit-1/localauthority/50-local.d/99-scan.pkla
+    echo "Polkit dosyası kaldırıldı"
+fi
+
+# 4. hacpasaport grubundaki kullanıcıları çıkar
+if getent group hacpasaport >/dev/null 2>&1; then
+    echo "hacpasaport grubundaki kullanıcılar çıkarılıyor..."
+    # Grubun tüm üyelerini al
+    group_members=$(getent group hacpasaport | cut -d: -f4)
+    
+    if [ -n "$group_members" ]; then
+        # Her üyeyi gruptan çıkar
+        IFS=',' read -ra MEMBERS <<< "$group_members"
+        for member in "${MEMBERS[@]}"; do
+            if [ -n "$member" ]; then
+                gpasswd -d "$member" hacpasaport 2>/dev/null || true
+                echo "Kullanıcı gruptan çıkarıldı: $member"
+            fi
+        done
+    fi
+    
+    # Grubu sil
+    groupdel hacpasaport 2>/dev/null || true
+    echo "hacpasaport grubu silindi"
+fi
+
+# 5. Uygulama dizinini kaldır (SADECE /opt/HacPasaport - ASLA /opt DEĞİL!)
+if [ -d "/opt/HacPasaport" ]; then
+    echo "Uygulama dizini kaldırılıyor: /opt/HacPasaport"
+    rm -rf /opt/HacPasaport
+    echo "Uygulama dizini kaldırıldı: /opt/HacPasaport"
+else
+    echo "Uygulama dizini zaten mevcut değil: /opt/HacPasaport"
+fi
+
+# 6. Uygulama menüsü kısayolunu kaldır
+if [ -f "/usr/share/applications/Pasaport-Tarayıcı-Kurulum.desktop" ]; then
+    rm -f /usr/share/applications/Pasaport-Tarayıcı-Kurulum.desktop
+    echo "Uygulama menüsü kısayolu kaldırıldı"
+fi
+
+# 7. Kullanıcı home dizinlerindeki kalıntıları temizle
+for user_home in /home/*; do
+    if [ -d "$user_home" ]; then
+        username=$(basename "$user_home")
+        
+        # GNOME otomatik başlatma dosyalarını kaldır
+        autostart_dir="$user_home/.config/autostart"
+        if [ -d "$autostart_dir" ]; then
+            rm -f "$autostart_dir/hacpasaport-group-activate.desktop" 2>/dev/null || true
+            rm -f "$autostart_dir/hacpasaport-session-start.desktop" 2>/dev/null || true
+            echo "GNOME otomatik başlatma dosyaları kaldırıldı: $username"
+        fi
+        
+        # Kullanıcı script dosyalarını kaldır
+        rm -f "$user_home/.hacpasaport_activate_group.sh" 2>/dev/null || true
+        rm -f "$user_home/.hacpasaport_session_start.sh" 2>/dev/null || true
+        rm -f "$user_home/.hacpasaport_group_check.sh" 2>/dev/null || true
+        echo "Kullanıcı script dosyaları kaldırıldı: $username"
+    fi
+done
+
+# 8. Geçici dosyaları temizle
+rm -f /tmp/Pasaport-Tarayıcı.desktop 2>/dev/null || true
+rm -f /tmp/Pasaport-Tarayıcı-Kurulum.desktop 2>/dev/null || true
+echo "Geçici dosyalar temizlendi"
+
+# 9. Desktop database'i güncelle
+if command -v update-desktop-database >/dev/null 2>&1; then
+    update-desktop-database /usr/share/applications
+    echo "Desktop database güncellendi"
+fi
+
+# 10. Java hold durumunu kontrol et ve gerekirse kaldır
+if apt-mark showhold | grep -qw "oracle-java8-jre"; then
+    echo "Java paketi hold durumunda. Hold durumu kaldırılıyor..."
+    apt-mark unhold oracle-java8-jre 2>/dev/null || true
+    echo "Java paketi hold durumundan çıkarıldı"
+fi
+
+# 11. SON GÜVENLİK KONTROLÜ: /opt dizininin hala mevcut olduğunu kontrol et
+if [ ! -d "/opt" ]; then
+    echo "KRİTİK HATA: /opt dizini kaldırılmış! Bu bir sistem hatasıdır."
+    exit 1
+fi
+
+echo "Güvenlik kontrolü: /opt dizini korundu"
+echo "HacPasaport Kurulum başarıyla kaldırıldı." 

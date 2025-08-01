@@ -1,22 +1,111 @@
 # DEB paketleri
 *.deb
+diyanet-pasaport-kurulum_*.deb
+hac-pasaport-kurulum_*.deb
 
-# Test dosyaları
-test_*.sh
-
-# Geçici dosyalar
-*.tmp
-*.log
-
-# Python cache
+# Python
 __pycache__/
-*.pyc
-*.pyo
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
 
-# IDE dosyaları
+# IDE ve Editör dosyaları
 .vscode/
 .idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Geçici dosyalar
+/tmp/
+*.tmp
+*.log
+*.bak
+*.backup
 
 # Sistem dosyaları
 .DS_Store
-Thumbs.db 
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Java (sadece belirli JAR dosyalarını hariç tut)
+*.class
+*.jar
+!swingUI.jar
+!tess4j-4.5.5.jar
+!opencv-3.4.2-0.jar
+!bcpkix-jdk15on-147.jar
+!bcprov-jdk15on-147.jar
+!cert-cvc.jar
+!commons-*.jar
+!fontbox-*.jar
+!ghost4j-*.jar
+!gson-*.jar
+!itext-*.jar
+!jai-imageio-*.jar
+!jbig2-imageio-*.jar
+!jboss-*.jar
+!jj2000-*.jar
+!jmrtd.jar
+!jna-*.jar
+!lept4j-*.jar
+!log4j-*.jar
+!pdfbox-*.jar
+!scuba.jar
+!slf4j-*.jar
+!xmlgraphics-commons-*.jar
+
+# OCR data (büyük dosyalar)
+tessdata/
+*.traineddata
+
+# OpenCV arşiv dosyaları (GitHub 100MB sınırı)
+opencv-*.jar.tar.gz
+
+# Test dosyaları
+test_*.sh
+*_test.py
+
+# Geçici kurulum dosyaları
+*.desktop
+/tmp/Pasaport-*.desktop
+
+# Log dosyaları
+*.log
+logs/
+
+# Backup dosyaları
+*.backup
+*.old
+*.orig
+
+# Git geçici dosyaları
+.git/
+.gitignore~
+
+# Proje özel dosyaları
+# Bu dosyalar projenin çalışması için gerekli değil
+# veya çok büyük olduğu için git'e gönderilmemeli diyanet-pasaport-kurulum_*.deb

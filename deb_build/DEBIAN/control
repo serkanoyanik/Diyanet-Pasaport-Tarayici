@@ -1,0 +1,10 @@
+Package: diyanet-pasaport-kurulum
+Version: 1.1.0
+Section: utils
+Priority: optional
+Architecture: amd64
+Maintainer: Serkan Oyanık <nakrerkan@gmail.com>
+Depends: python3, python3-gi, gir1.2-gtk-3.0, gir1.2-vte-2.91, pcscd, tesseract-ocr, tesseract-ocr-tur, libacsccid1, dialog, oracle-java8-jre
+Description: Diyanet Pasaport Tarayıcı Kurulum ve Yönetim Aracı
+ Modern GTK3 arayüzlü, terminal entegreli, kullanıcı ve donanım yönetimi sağlayan kurulum aracı.
+ Canon LiDE200 tarayıcı desteği ile pasaport tarama işlemleri için gerekli kurulumları yapar. 

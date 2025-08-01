@@ -1,0 +1,66 @@
+#!/bin/bash
+set -e
+
+# Dosya izinlerini ayarla
+if [ -f "/opt/HacPasaport/pasaport.sh" ]; then
+    chmod +x /opt/HacPasaport/pasaport.sh
+fi
+if [ -f "/opt/HacPasaport/sc.sh" ]; then
+    chmod +x /opt/HacPasaport/sc.sh
+fi
+if [ -f "/opt/HacPasaport/app/script/install.sh" ]; then
+    chmod +x /opt/HacPasaport/app/script/install.sh
+fi
+
+# OpenCV jar arşivini çıkar
+if [ -f "/opt/HacPasaport/opencv-3.4.2-0.jar.tar.gz" ]; then
+    cd /opt/HacPasaport/
+    tar -xzf opencv-3.4.2-0.jar.tar.gz
+    rm -f opencv-3.4.2-0.jar.tar.gz
+    echo "OpenCV jar arşivi çıkarıldı"
+fi
+
+# Desktop dosyası izinlerini ayarla
+if [ -f "/usr/share/applications/diyanet-pasaport-kurulum.desktop" ]; then
+    chmod 644 /usr/share/applications/diyanet-pasaport-kurulum.desktop
+fi
+
+# update-desktop-database çalıştır
+if command -v update-desktop-database >/dev/null 2>&1; then
+    update-desktop-database /usr/share/applications
+fi
+
+# Uygulama menüsü kısayolu oluştur (GUI kurulum aracı için)
+echo "Uygulama menüsü kısayolu oluşturuluyor..."
+
+# Pasaport-Tarayıcı-Kurulum.desktop dosyasını oluştur
+cat > /tmp/Pasaport-Tarayıcı-Kurulum.desktop <<EOF
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Pasaport Tarayıcı Kurulum
+Comment=Diyanet Pasaport Tarayıcı Kurulum ve Yönetim Aracı
+Exec=python3 /opt/HacPasaport/app/app.py
+Icon=/opt/HacPasaport/app/icons/canon-lide-210.png
+Categories=Utility;Application;
+Terminal=false
+StartupNotify=false
+EOF
+
+# Sistem genelinde uygulama menüsüne ekle
+if [ -d "/usr/share/applications" ]; then
+    cp /tmp/Pasaport-Tarayıcı-Kurulum.desktop /usr/share/applications/
+    chmod 644 /usr/share/applications/Pasaport-Tarayıcı-Kurulum.desktop
+    echo "Uygulama menüsü kısayolu oluşturuldu: /usr/share/applications/Pasaport-Tarayıcı-Kurulum.desktop"
+fi
+
+# Geçici dosyayı temizle
+rm -f /tmp/Pasaport-Tarayıcı-Kurulum.desktop
+
+# NOT: Masaüstü kısayolu sadece GUI'den "Kurulumu Başlat" butonuna basıldığında
+# seçilen kullanıcı için oluşturulacak. Bu işlem install.sh scripti tarafından yapılacak.
+echo "Masaüstü kısayolu GUI kurulumu sırasında seçilen kullanıcı için oluşturulacak."
+
+echo "HacPasaport Kurulum paketi başarıyla kuruldu!"
+echo "Masaüstü kısayolları oluşturuldu!"
+echo "Uygulamalar menüsünden 'Pasaport Tarayıcı Kurulum' uygulamasını çalıştırabilirsiniz." 
