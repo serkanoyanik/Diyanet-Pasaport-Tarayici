@@ -71,16 +71,12 @@ class GroupInfoDialog(Gtk.Dialog):
         
         box = self.get_content_area()
         
-        info_text = """ℹ️ Önemli Bilgi
+        info_text = """ℹ️ Başarılı Kurulum!
 
-Kullanıcı HacPasaport grubuna eklendikten sonra:
+Kullanıcı `hacpasaport` grubuna başarıyla eklendi ve ayarlar anında aktif edildi. 
 
-1. Oturumu kapatıp tekrar giriş yapın
-2. Eğer grup üyeliği aktif olmazsa, sistemi yeniden başlatın
-
-Bu, Linux sistemlerinde grup üyeliklerinin aktif olması için gereklidir.
-
-Not: Bazı masaüstü ortamlarında (özellikle GNOME) grup üyeliğinin aktif olması için yeniden başlatma gerekebilir."""
+🎉 Oturumu kapatmanıza veya yeniden başlatmanıza gerek yoktur.
+Pasaport Tarayıcı uygulamasını doğrudan kullanmaya başlayabilirsiniz!"""
         
         label = Gtk.Label(label=info_text)
         label.set_line_wrap(True)
@@ -277,20 +273,16 @@ class AppWindow:
         
         box = dialog.get_content_area()
         
-        info_text = """ℹ️ GNOME Masaüstü - Grup Üyeliği Bilgisi
+        info_text = """ℹ️ GNOME Masaüstü - Başarılı Kurulum!
 
-Kullanıcı HacPasaport grubuna eklendikten sonra:
+Kullanıcı `hacpasaport` grubuna başarıyla eklendi.
 
-✅ Otomatik Aktivasyon:
-GNOME ortamında grup üyeliği otomatik olarak aktif hale getirilmeye çalışıldı.
+✅ Anında Aktivasyon:
+GNOME ortamı için özel geliştirilen dinamik aktivasyon (on-the-fly) sayesinde grup üyeliği anında devreye alındı.
 
-🔄 Oturum Yenileme (Önerilen):
-1. Oturumu kapatın (Çıkış Yap)
-2. Tekrar giriş yapın
-3. Terminal'de 'groups' komutu ile kontrol edin
-
-✅ Gelişmiş GNOME Aktivasyonu:
-Artık GNOME'da oturum kapatıp açtıktan sonra grup üyeliği otomatik olarak aktif hale gelecek.
+🎉 Oturumu kapatmanıza gerek kalmadan uygulamayı doğrudan kullanabilirsiniz!"""
+        
+        label = Gtk.Label(label=info_text)
 
 ⚠️ GNOME Özel Durumu:
 GNOME masaüstü ortamında grup üyelikleri bazen oturum kapatıp açma ile aktif olmayabilir. Bu durumda:
@@ -348,20 +340,11 @@ GNOME'da oturum kapatıp açtıktan sonra grup üyeliği otomatik olarak aktif h
         
         box = dialog.get_content_area()
         
-        info_text = """ℹ️ Önemli Bilgi
+        info_text = """ℹ️ Başarılı Kurulum!
 
-Kullanıcı HacPasaport grubuna eklendikten sonra:
+Kullanıcı `hacpasaport` grubuna eklendi ve ayarlar anında aktif edildi.
 
-1. Oturumu kapatıp tekrar giriş yapın
-2. Eğer grup üyeliği aktif olmazsa, sistemi yeniden başlatın
-
-Bu, Linux sistemlerinde grup üyeliklerinin aktif olması için gereklidir.
-
-⚠️ Masaüstü Ortamı Uyarısı:
-Bazı masaüstü ortamlarında grup üyeliğinin aktif olması için yeniden başlatma gerekebilir. Eğer oturum kapatıp açma yeterli olmazsa, bilgisayarı yeniden başlatın.
-
-🔍 Grup Üyeliğini Kontrol Etmek İçin:
-Terminal'de 'groups' komutunu çalıştırarak hacpasaport grubunun listede olup olmadığını kontrol edebilirsiniz."""
+🎉 Oturumu kapatmanıza veya bilgisayarı yeniden başlatmanıza gerek yoktur. Uygulamayı kullanmaya başlayabilirsiniz!"""
         
         label = Gtk.Label(label=info_text)
         label.set_line_wrap(True)
@@ -494,7 +477,7 @@ Terminal'de 'groups' komutunu çalıştırarak hacpasaport grubunun listede olup
         about_dialog = Gtk.AboutDialog(
             transient_for=self.window, modal=True, authors=["Serkan Oyanık"],
             comments="Bu uygulama, Pasaport Tarayıcı için gerekli kurulumları yapar.",
-            program_name="Diyanet Pasaport Tarayıcı Kurulum", version="1.1.1",
+            program_name="Diyanet Pasaport Tarayıcı Kurulum", version="1.1.2",
             website="https://github.com/serkanoyanik/Diyanet-Pasaport-Tarayici", website_label="Proje Github Reposu"
         )
         

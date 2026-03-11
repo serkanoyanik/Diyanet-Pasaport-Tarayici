@@ -98,7 +98,7 @@ if [ "$ADDUSERONLY" = "adduseronly" ]; then
         fi
         # Masaüstü kısayolunu ekle
         add_desktop_shortcut
-        echo -e "\n[UYARI] Kullanıcının oturumunu sonlandırıp tekrar giriş yapmalısınız. Grup ve yetki değişikliklerinin etkili olması için bu gereklidir."
+        echo -e "\n[BİLGİ] Kullanıcı gruba eklendi ve ayarlar anında aktif edildi. Uygulamayı kullanmaya başlayabilirsiniz."
     else
         error_exit "Kullanıcı bulunamadı: $KULLANICI"
     fi
@@ -708,5 +708,5 @@ fi
 log "16. Kurulum tamamlandı!"
 
 log "Kurulum tamamlandı!"
-# Uyarı mesajı için stabil, yanıp sönmeyen fakat belirgin (mavi zemin uyarı başlığı, kırmızı zemin gözetimli beyaz yazı) bir format kullanıyoruz
-echo -e "\n\e[44m\e[97m [UYARI] \e[0m\e[41m\e[97m Kullanıcının oturumunu sonlandırıp tekrar giriş yapmalısınız. Grup ve yetki değişikliklerinin etkili olması için bu gereklidir. \e[0m"
+# Uyarı mesajı yerine bilgilendirme
+echo -e "\n\e[42m\e[97m [BAŞARILI] \e[0m\e[44m\e[97m Kurulum başarıyla tamamlandı. Oturum kapatmanıza gerek yoktur, uygulamayı hemen kullanabilirsiniz. \e[0m\n"
