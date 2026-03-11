@@ -24,7 +24,7 @@ Version=1.0
 Type=Application
 Name=Pasaport Tarayıcı
 Comment=Diyanet Pasaport Tarayıcı Uygulaması
-Exec=sudo /opt/HacPasaport/pasaport.sh
+Exec=sg hacpasaport -c "sudo /opt/HacPasaport/pasaport.sh"
 Icon=org.gnome.SimpleScan
 Categories=Utility;Application;
 Terminal=true
@@ -43,12 +43,13 @@ EOF
             # DBUS oturumu bularak güvenilir başlatıcı işaretle
             USER_UID=$(id -u "$KULLANICI")
             
-            # GNOME için güvenlik işaretleme
-            sudo -u "$KULLANICI" sh -c "DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$USER_UID/bus gio set '$DESKTOP_DIR/Pasaport-Tarayıcı.desktop' 'metadata::trusted' yes" 2>/dev/null || true
+            # GNOME için güvenlik işaretleme (dbus-launch ve eval bypass yöntemi ile)
+            sudo -u "$KULLANICI" bash -c "dbus-launch gio set '$DESKTOP_DIR/Pasaport-Tarayıcı.desktop' metadata::trusted yes 2>/dev/null" || true
+            sudo -u "$KULLANICI" bash -c "DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$USER_UID/bus gio set '$DESKTOP_DIR/Pasaport-Tarayıcı.desktop' metadata::trusted yes 2>/dev/null" || true
             
             # XFCE için güvenlik işaretleme (sha256sum checksum tabanlı trust)
             CHECKSUM=$(sha256sum "$DESKTOP_DIR/Pasaport-Tarayıcı.desktop" | awk '{print $1}')
-            sudo -u "$KULLANICI" sh -c "DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$USER_UID/bus gio set -t string '$DESKTOP_DIR/Pasaport-Tarayıcı.desktop' 'metadata::xfce-exe-checksum' '$CHECKSUM'" 2>/dev/null || true
+            sudo -u "$KULLANICI" bash -c "DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$USER_UID/bus gio set -t string '$DESKTOP_DIR/Pasaport-Tarayıcı.desktop' metadata::xfce-exe-checksum '$CHECKSUM' 2>/dev/null" || true
             log "Masaüstü kısayolu $DESKTOP_DIR dizinine kopyalandı (Java uygulaması)."
         fi
     done
@@ -311,7 +312,7 @@ Version=1.0
 Type=Application
 Name=Pasaport Tarayıcı
 Comment=Diyanet Pasaport Tarayıcı Uygulaması
-Exec=sudo /opt/HacPasaport/pasaport.sh
+Exec=sg hacpasaport -c "sudo /opt/HacPasaport/pasaport.sh"
 Icon=org.gnome.SimpleScan
 Categories=Utility;Application;
 Terminal=true
@@ -337,11 +338,14 @@ for DESKTOP_DIR in "$USER_HOME/Masaüstü" "$USER_HOME/Desktop"; do
         chmod +x "$DESKTOP_DIR/Pasaport-Tarayıcı.desktop"
         
         USER_UID=$(id -u "$KULLANICI")
-        # GNOME için güvenlik işaretleme - basit ve güvenli yöntem
-        sudo -u "$KULLANICI" sh -c "DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$USER_UID/bus gio set '$DESKTOP_DIR/Pasaport-Tarayıcı.desktop' 'metadata::trusted' yes" 2>/dev/null || true
+        # GNOME için güvenlik işaretleme - (dbus-launch ve eval bypass yöntemi ile)
+        sudo -u "$KULLANICI" bash -c "dbus-launch gio set '$DESKTOP_DIR/Pasaport-Tarayıcı.desktop' metadata::trusted yes 2>/dev/null" || true
+        sudo -u "$KULLANICI" bash -c "DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$USER_UID/bus gio set '$DESKTOP_DIR/Pasaport-Tarayıcı.desktop' metadata::trusted yes 2>/dev/null" || true
+        
         # XFCE için güvenlik işaretleme (sha256sum checksum tabanlı trust)
         CHECKSUM=$(sha256sum "$DESKTOP_DIR/Pasaport-Tarayıcı.desktop" | awk '{print $1}')
-        sudo -u "$KULLANICI" sh -c "DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$USER_UID/bus gio set -t string '$DESKTOP_DIR/Pasaport-Tarayıcı.desktop' 'metadata::xfce-exe-checksum' '$CHECKSUM'" 2>/dev/null || true
+        sudo -u "$KULLANICI" bash -c "DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$USER_UID/bus gio set -t string '$DESKTOP_DIR/Pasaport-Tarayıcı.desktop' metadata::xfce-exe-checksum '$CHECKSUM' 2>/dev/null" || true
+        
         sudo -u "$KULLANICI" chmod +x "$DESKTOP_DIR/Pasaport-Tarayıcı.desktop"
         sudo -u "$KULLANICI" update-desktop-database "$LOCAL_APP_DIR" 2>/dev/null || true
         
