@@ -283,42 +283,6 @@ GNOME ortamı için özel geliştirilen dinamik aktivasyon (on-the-fly) sayesind
 🎉 Oturumu kapatmanıza gerek kalmadan uygulamayı doğrudan kullanabilirsiniz!"""
         
         label = Gtk.Label(label=info_text)
-
-⚠️ GNOME Özel Durumu:
-GNOME masaüstü ortamında grup üyelikleri bazen oturum kapatıp açma ile aktif olmayabilir. Bu durumda:
-
-🔄 Alternatif Yöntemler:
-• Yeni bir terminal penceresi açın (Ctrl+Alt+T)
-• 'groups' komutu ile kontrol edin
-• Otomatik aktivasyon scripti çalıştırın: ~/.hacpasaport_activate_group.sh
-
-⚠️ ÖNEMLİ UYARI:
-Eğer masaüstü erişimi kaybolursa veya grup üyeliği aktif olmazsa:
-• Bilgisayarı yeniden başlatın
-• Veya yeni bir oturum açın (Ctrl+Alt+F2)
-
-🔍 Grup Üyeliğini Kontrol Etmek İçin:
-Terminal'de şu komutu çalıştırın:
-groups
-
-✅ Başarılı grup üyeliği şöyle görünür:
-pardus-adm adm dialout cdrom floppy sudo audio dip video plugdev netdev hacpasaport
-
-💡 İpucu: GNOME'da grup üyeliklerinin aktif olması için bazen yeni terminal pencereleri açmak gerekebilir.
-
-🛠️ Otomatik Aktivasyon Araçları:
-• ~/.hacpasaport_activate_group.sh - Grup üyeliğini aktif hale getirir
-• ~/.hacpasaport_session_start.sh - Oturum başlangıcında grup üyeliğini aktif hale getirir
-• ~/.hacpasaport_group_check.sh - Grup üyeliğini kontrol eder
-
-🔧 Sorun Giderme:
-Eğer masaüstü erişimi kaybolursa, terminal'de şu komutu çalıştırın:
-sudo systemctl restart gdm
-
-✅ Yeni Özellik:
-GNOME'da oturum kapatıp açtıktan sonra grup üyeliği otomatik olarak aktif hale gelecek."""
-        
-        label = Gtk.Label(label=info_text)
         label.set_line_wrap(True)
         label.set_justify(Gtk.Justification.LEFT)
         
