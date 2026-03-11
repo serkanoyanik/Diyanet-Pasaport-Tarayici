@@ -1,0 +1,150 @@
+/* Pasaport Tarayıcı Kurulum Uygulaması CSS Stilleri */
+
+.rounded-green-button {
+    background-color: #00C851;
+    background-image: none;
+    color: white;
+    border-radius: 12px;
+    padding: 4px 8px;
+    border: 1px solid #00C851;
+    font-weight: bold;
+    font-size: 14px;
+    min-width: 20px;
+    min-height: 25px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.rounded-green-button:hover {
+    background-color: #00A843;
+    background-image: none;
+    border-color: #00A843;
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.rounded-green-button:active {
+    background-color: #007E33;
+    background-image: none;
+    border-color: #007E33;
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.rounded-green-button label {
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    background: transparent;
+}
+
+.rounded-green-button:focus {
+    outline: none;
+    border: 2px solid #00E676;
+    box-shadow: 0 0 0 2px rgba(0, 230, 118, 0.3);
+}
+
+/* Terminal stilleri */
+#terminal_frame {
+    background-color: #2E2E2E;
+    color: #FFFFFF;
+}
+
+/* Ana pencere stilleri */
+#main_window {
+    background-color: #F5F5F5;
+}
+
+/* Sol panel stilleri */
+#left_panel {
+    background-color: #FFFFFF;
+    border-right: 1px solid #E0E0E0;
+}
+
+/* Header bar stilleri */
+#header_bar {
+    background-color: #F8F8F8;
+    border-bottom: 1px solid #E0E0E0;
+}
+
+/* Menü stilleri */
+GtkMenu {
+    background-color: #FFFFFF;
+    border: 1px solid #E0E0E0;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    padding: 4px 0;
+}
+
+GtkMenuItem {
+    padding: 10px 16px;
+    background-color: transparent;
+    border-radius: 6px;
+    margin: 2px 4px;
+}
+
+GtkMenuItem:hover {
+    background-color: #F5F5F5;
+    border-radius: 6px;
+}
+
+GtkSeparatorMenuItem {
+    background-color: #E8E8E8;
+    margin: 4px 8px;
+    border-radius: 1px;
+}
+
+/* Alternatif menü stilleri */
+menu {
+    background-color: #FFFFFF;
+    border: 1px solid #E0E0E0;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    padding: 4px 0;
+}
+
+menuitem {
+    padding: 10px 16px;
+    background-color: transparent;
+    border-radius: 6px;
+    margin: 2px 4px;
+}
+
+menuitem:hover {
+    background-color: #F5F5F5;
+    border-radius: 6px;
+}
+
+separator {
+    background-color: #E8E8E8;
+    margin: 4px 8px;
+    border-radius: 1px;
+}
+
+/* Özel menü sınıfı */
+.custom-menu {
+    background-color: #FFFFFF;
+    border: 1px solid #E0E0E0;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    padding: 2px 0;
+}
+
+.custom-menu menuitem {
+    padding: 6px 4px;
+    background-color: transparent;
+    border-radius: 6px;
+    margin: 1px 2px;
+}
+
+.custom-menu menuitem:hover {
+    background-color: #F5F5F5;
+    border-radius: 6px;
+}
+
+.custom-menu separator {
+    background-color: #E8E8E8;
+    margin: 2px 4px;
+    border-radius: 1px;
+} 

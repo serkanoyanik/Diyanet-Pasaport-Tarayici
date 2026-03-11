@@ -1,0 +1,11 @@
+#!/bin/bash
+set -e
+
+# Sadece "remove" veya "purge" işlemi sırasında paket söküm işlemini yap.
+# "upgrade" veya "failed-upgrade" gibi durumlarında (yeniden yükle vs) HİÇBİR DOSYAYA DOKUNMA!
+if [ "$1" != "remove" ] && [ "$1" != "purge" ]; then
+    echo "Paket güncelleniyor (upgrade). Mevcut dosyalar korunacak."
+    exit 0
+fi
+
+exit 0
